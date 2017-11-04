@@ -1,7 +1,7 @@
 const trim = require('trim');
 const cheerio = require('cheerio');
 const requests = require('superagent');
-const specifics = require('./specifics');
+const utils = require('./utils');
 
 function _getTitle(cheerioObject) {
     const title = cheerioObject('head').text();
@@ -72,7 +72,7 @@ module.exports = (url, callback) => {
     requests.get(url).redirects(2)
         .timeout({
             response: 3000,
-            deadline: 10000,
+            deadline: 3000,
         })
         .ok(res => res.status < 500)
         .end((err, res) => {
@@ -97,15 +97,20 @@ module.exports = (url, callback) => {
                            _getFirstParagraph(cheerioObject),
                 type: _getOgType(cheerioObject),
                 keywords: _getKeywords(cheerioObject),
-                image: _getOgImage(cheerioObject) ||
-                           _getFirstImage(cheerioObject),
             };
 
-            const site = specifics.getSite(res.request.host);
+            const site = utils.getSite(res.request.host);
             if (site) {
                 metadata.site = site;
             }
-            return callback(null, metadata);
+            const image = _getOgImage(cheerioObject) || _getFirstImage(cheerioObject);
+            utils.verifyImage(image, (aerr) => {
+                if (!aerr) {
+                    metadata.image = image;
+                }
+                return callback(null, metadata);
+            });
+            return null;
         });
     return null;
 };
