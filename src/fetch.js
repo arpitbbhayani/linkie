@@ -1,3 +1,4 @@
+const url = require('url');
 const trim = require('trim');
 const cheerio = require('cheerio');
 const requests = require('superagent');
@@ -102,6 +103,7 @@ module.exports = (url, callback) => {
             const site = utils.getSite(res.request.host);
             if (site) {
                 metadata.site = site;
+                metadata.extra = utils.populateSiteRelatedInfo(site, url);
             }
             const image = _getOgImage(cheerioObject) || _getFirstImage(cheerioObject);
             utils.verifyImage(image, (aerr) => {

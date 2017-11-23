@@ -1,3 +1,5 @@
+const url = require('url');
+const querystring = require('querystring');
 const requests = require('superagent');
 
 const hostSiteMap = {
@@ -8,11 +10,22 @@ const hostSiteMap = {
 const hostSiteMapKeys = Object.keys(hostSiteMap);
 
 module.exports = {
+    populateSiteRelatedInfo(site, siteUrl) {
+        const extra = {};
+        if (site === "youtube") {
+            const vid = querystring.parse(url.parse(siteUrl).query).v;
+            if (vid) {
+                extra.vid = vid;
+            }
+        }
+        return extra;
+    },
+
     getSite(host) {
         for (let i = 0; i < hostSiteMapKeys.length; i += 1) {
             const key = hostSiteMapKeys[i];
-            const value = hostSiteMapKeys[key];
-            if (host.indexOf(key) !== -1) {
+            const value = hostSiteMap[key];
+            if (host === key) {
                 return value;
             }
         }
