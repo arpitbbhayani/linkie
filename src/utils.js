@@ -1,4 +1,4 @@
-const url = require('url');
+const URL = require('url');
 const querystring = require('querystring');
 const requests = require('superagent');
 
@@ -12,8 +12,8 @@ const hostSiteMapKeys = Object.keys(hostSiteMap);
 module.exports = {
     populateSiteRelatedInfo(site, siteUrl) {
         const extra = {};
-        if (site === "youtube") {
-            const vid = querystring.parse(url.parse(siteUrl).query).v;
+        if (site === 'youtube') {
+            const vid = querystring.parse(URL.parse(siteUrl).query).v;
             if (vid) {
                 extra.vid = vid;
             }

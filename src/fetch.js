@@ -1,4 +1,3 @@
-const url = require('url');
 const trim = require('trim');
 const cheerio = require('cheerio');
 const requests = require('superagent');
