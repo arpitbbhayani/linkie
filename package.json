@@ -1,9 +1,10 @@
 {
   "name": "linkie",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Extract meta information about a link",
   "main": "lib/linkie.js",
   "scripts": {
+    "lint": "./node_modules/.bin/eslint src",
     "build": "./node_modules/.bin/webpack --env build",
     "dev": "./node_modules/.bin/webpack --progress --colors --watch --env dev",
     "prepublish": "npm run build"

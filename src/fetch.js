@@ -4,7 +4,7 @@ const requests = require('superagent');
 const utils = require('./utils');
 
 function _getTitle(cheerioObject) {
-    const title = cheerioObject('head').text();
+    const title = cheerioObject('title').text();
     return title ? trim(title) : '';
 }
 
@@ -65,10 +65,14 @@ function _getOgImage(cheerioObject) {
     return imageUrl ? trim(imageUrl) : '';
 }
 
-module.exports = (url, callback) => {
+module.exports = (url, options, fn) => {
+    const callback = fn || options;
+    const { verifyImage } = options;
+
     if (!url) {
         return callback(null, {});
     }
+
     requests.get(url).redirects(2)
         .timeout({
             response: 3000,
@@ -105,12 +109,17 @@ module.exports = (url, callback) => {
                 metadata.extra = utils.populateSiteRelatedInfo(site, url);
             }
             const image = _getOgImage(cheerioObject) || _getFirstImage(cheerioObject);
-            utils.verifyImage(image, (aerr) => {
-                if (!aerr) {
-                    metadata.image = image;
-                }
+            if (verifyImage) {
+                utils.verifyImage(image, (aerr) => {
+                    if (!aerr) {
+                        metadata.image = image;
+                    }
+                    return callback(null, metadata);
+                });
+            } else {
+                metadata.image = image;
                 return callback(null, metadata);
-            });
+            }
             return null;
         });
     return null;
